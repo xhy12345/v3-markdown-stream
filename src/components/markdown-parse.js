@@ -30,9 +30,9 @@ export default defineComponent({
         let unifiedProcessor = computed(() => { // unified解析器工具链初始化
             const processor = unified()
                 .use(remarkParse, { allowDangerousHtml: true})
+                .use(remarkFlexibleContainers)
                 .use(remarkRehype, { allowDangerousHtml: true})
                 .use(rehypeRaw)
-                .use(remarkFlexibleContainers)
                 .use(remarkGfm)
                 .use(rehypeKatex)
                 .use(remarkMath)

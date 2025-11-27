@@ -4,9 +4,13 @@ export const streamContent = `# Markdown 全面功能演示
 
 这是**粗体文本**，这是*斜体文本*，这是***加粗斜体***。
 
+<a href="https://www.baidu.com/">原生html标签百度</a>
+
 这是~~删除线文本~~，这是<u>下划线文本</u>，这是<mark>高亮文本</mark>。
 
 这是^上标^和~下标~。
+
+啦啦啦德玛西亚，啦啦啦<br>皇子开大
 
 这是内联代码：\`let hello = 'world'\`。
 
