@@ -1,0 +1,51 @@
+{
+  "name": "v3-markdown-stream",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "author": "xianghy",
+	"license": "MIT",
+	"main": "dist/v3-markdown-stream.js",
+  "module": "dist/v3-markdown-stream.umd.cjs",
+  "files": [
+		"package.json",
+		"README.md",
+		"dist"
+	],
+  "description": "vue3流式输出增量渲染的组件、无闪屏、无卡顿、样式友好",
+  "keywords": [
+		"markdown解析",
+    "流式输出",
+    "增量解析"
+	],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "hast-util-to-jsx-runtime": "^2.3.6",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.25",
+    "rehype-highlight": "^7.0.2",
+    "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
+    "remark-flexible-containers": "^1.5.2",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "sass": "^1.94.2",
+    "sass-loader": "^16.0.6",
+    "unified": "^11.0.5",
+    "vfile": "^6.0.3",
+    "vue": "^3.5.24"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.24"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.2.4"
+  }
+}
