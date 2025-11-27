@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     port:'8080',
   },
+//   publicPath: './',
   // 打包配置
 	build: {
 		// 打包后的文件输出目录

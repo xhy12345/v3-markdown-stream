@@ -2,6 +2,8 @@
 
 一个基于 Vue 3 的高性能 Markdown 流式渲染组件，支持增量输出、无闪屏、无卡顿，样式友好。
 
+[演示地址](https://xhy12345.github.io/ "演示地址")
+
 ## 特性
 
 - ✨ **流式输出**：支持增量渲染 Markdown 内容，适用于大文本或流式数据场景
@@ -43,7 +45,8 @@ yarn add v3-markdown-stream
 
 <script setup>
 import { ref } from 'vue'
-import MarkdownRender from 'v3-markdown-stream'
+import { MarkdownRender } from 'v3-markdown-stream';
+import 'v3-markdown-stream/dist/v3-markdown-stream.css';
 
 // 静态内容
 const markdownContent = ref('# Hello World\n\nThis is a simple markdown example.')
@@ -64,6 +67,9 @@ const markdownContent = ref('# Hello World\n\nThis is a simple markdown example.
 - 数学公式（使用 KaTeX）
 - 提示框（警告、提示、错误）
 - GFM 扩展
+
+[GitHub源码仓库地址](https://github.com/xhy12345/v3-markdown-stream)
+如果觉得好用，欢迎给个Star ⭐️ 支持一下！
 
 ## 贡献
 
