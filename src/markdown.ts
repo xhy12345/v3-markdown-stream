@@ -177,7 +177,7 @@ $$
 
 <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
   <p>这是使用原生HTML创建的内容块。</p>
-  <button onclick="alert('Hello from HTML!')">点击我</button>
+  <button>点击我</button>
 </div>
 
 <details>

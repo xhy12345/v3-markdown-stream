@@ -1,8 +1,16 @@
 # v3-markdown-stream
 
+[![NPM version](https://img.shields.io/npm/v/v3-markdown-stream.svg?style=flat)](https://npmjs.org/package/v3-markdown-stream) [![NPM downloads](http://img.shields.io/npm/dm/v3-markdown-stream.svg?style=flat)](https://npmjs.org/package/v3-markdown-stream)
+
 一个基于 Vue 3 的高性能 Markdown 流式渲染组件，支持增量输出、无闪屏、无卡顿，样式友好。
 
 [演示地址](https://xhy12345.github.io/ "演示地址")
+
+> **🔧 环境要求：**
+> - `@vitejs/plugin-vue` 版本必须 **≥ 6.0.1** 
+> - `vite` 版本必须 **≥ 7.2.2**
+> 
+> 请确保你的项目依赖满足以上版本要求，否则可能会出现兼容性问题！
 
 ## 特性
 

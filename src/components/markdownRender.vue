@@ -13,6 +13,13 @@ import VueMarkdownStreamRender from "./markdown-parse.js";
  * @returns {string} 清理后的 Markdown 字符串
  */
 function stripBrokenImages(md) {
+  if(typeof(md) !== 'string') {
+    console.log('%c v3-markdown-stream：请传正确的md字符串～ ','background:#ea2039;color:#ffffff;padding:2px 5px;')
+    return '';
+  }
+  if(!md) {
+    return '';
+  }
   md = md.replace(
     /^\s*\[([^\]]+)\]:[ \t]*(\S+)(?:[ \t]+(["'])(?:(?!\3)[\s\S])*?)?$/gm,
     (s, id, src, quote) => {

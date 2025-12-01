@@ -1,4 +1,4 @@
-import { h, defineComponent, computed } from "vue";
+import { h, defineComponent, createVNode, computed } from "vue";
 import { Fragment, jsxs, jsx } from "vue/jsx-runtime";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import remarkParse from "remark-parse";
@@ -58,10 +58,14 @@ export default defineComponent({
         };
 
         const computedVNode = computed(() => {
-            const processor = unifiedProcessor.value;
-            const file = createFile(props.markstr);
-            let result = generateVueNode(processor.runSync(processor.parse(file), file));
-            return result;
+            if(props.markstr) {
+                const processor = unifiedProcessor.value;
+                const file = createFile(props.markstr);
+                let result = generateVueNode(processor.runSync(processor.parse(file), file));
+                return result;
+            } else {
+                return createVNode('div',null,null);
+            }            
         });
 
         return () => {
