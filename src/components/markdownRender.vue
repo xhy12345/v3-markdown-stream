@@ -41,7 +41,41 @@ function stripBrokenImages(md) {
     }
   );
   md = md.replace(/!\[[^\]]*\]\([^)]*$/g, "");
-  return md;
+  return filterInvalidTables(md);
+}
+
+/**
+ * 过滤流式输出中结构不完整的表格字符串
+ * @param {string} content - 流式输出的原始内容
+ * @returns {string} 过滤后的内容（仅保留合法表格，非法表格替换为空）
+ */
+function filterInvalidTables(content) {
+  // 表头加载完成后过滤
+  // const tableRegex = /(?:^\|(?:\s*.+?\s*)?\|?$[\n\r]?)+(?:^\|(?:\s*[-:]+)+(?:\s*\|\s*[-:]+)*\s*\|?$[\n\r]?)+(?:^\|(?:\s*.+?\s*)?\|?$[\n\r]?)*(?=\n|$)/gm;
+  //宽松模式过滤
+  const tableRegex = /^\|(?:\s*.+?\s*)?\|?$(?:\r?\n^\|(?:\s*[-:]+)+(?:\s*\|\s*[-:]+)*\s*\|?$(?:\r?\n^\|(?:\s*.+?\s*)?\|?$)*)?/gm;
+  return content.replace(tableRegex, (match) => {
+    // 分割表头行和分隔符行
+    const lines = match.trim().split(/[\r\n]+/).filter(line => line.trim());
+    if (lines.length < 2) return ''; // 至少需要表头行 + 分隔符行
+    // 最后一行表头（处理多行表头场景）
+    const headerLine = lines[0].trim();
+    // 分隔符行
+    const separatorLine = lines[1].trim();
+
+    // 提取表头列数：分割 | 后，过滤空字符串（处理前后 | 的情况）
+    const headerColumns = headerLine.split('|').map(col => col.trim()).filter(col => col);
+    const headerCount = headerColumns.length;
+
+    // 提取分隔符列数：分割 | 后，过滤空字符串，且必须包含至少1个 -
+    const separatorColumns = separatorLine.split('|')
+      .map(col => col.trim())
+      .filter(col => col && /-/.test(col)); // 分隔符必须包含 -
+    const separatorCount = separatorColumns.length;
+
+    // 仅当列数完全一致时保留表格，否则替换为空
+    return (headerCount === separatorCount && headerCount>0 && separatorCount>0) ? match : '';
+  });
 }
 
 let props = defineProps({

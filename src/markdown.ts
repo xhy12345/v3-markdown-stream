@@ -1,4 +1,10 @@
-export const streamContent = `# Markdown 全面功能演示
+export const streamContent =  `# Markdown 全面功能演示
+
+| 姓名 | 年龄 | 职业 |
+|------|------|------|
+| 张三 | 25   | 工程师 |
+| 李四 | 30   | 设计师 |
+| 王五 | 28   | 产品经理 |
 
 ## 1. 文本格式
 
