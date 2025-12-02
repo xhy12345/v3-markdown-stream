@@ -41,7 +41,7 @@ function stripBrokenImages(md) {
     }
   );
   md = md.replace(/!\[[^\]]*\]\([^)]*$/g, "");
-  return filterInvalidTables(md);
+  return clearUnclosedBlockMath(filterInvalidTables(md));
 }
 
 /**
@@ -76,6 +76,22 @@ function filterInvalidTables(content) {
     // 仅当列数完全一致时保留表格，否则替换为空
     return (headerCount === separatorCount && headerCount>0 && separatorCount>0) ? match : '';
   });
+}
+
+/**
+ * 清除 Markdown 中未闭合的块级公式（$$ 开头未闭合）
+ * @param {string} markdown - 原始 Markdown 字符串
+ * @returns {string} 处理后的 Markdown 字符串
+ */
+function clearUnclosedBlockMath(markdown) {
+  // 正则说明：
+  // 1. /\$\$(?!.*?\$\$).*$/s - 核心正则
+  // 2. \$\$ - 匹配块级公式开始标记
+  // 3. (?!.*?\$\$) - 正向否定预查：确保后面没有 $$ 闭合（非贪婪匹配任意字符）
+  // 4. .*$ - 匹配从 $$ 开始到字符串结束的所有内容
+  // 5. s 修饰符 - 让 . 匹配换行符（支持多行公式）
+  // 6. g 修饰符 - 全局匹配（处理多个未闭合公式的极端情况）
+  return markdown.replace(/\$\$(?!.*?\$\$).*$/gs, '');
 }
 
 let props = defineProps({
