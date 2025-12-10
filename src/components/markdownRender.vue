@@ -100,6 +100,10 @@ let props = defineProps({
     require: true,
     default: "",
   },
+  themeColor: {
+    type: String,
+    default: "#000000",
+  }
 });
 
 let markString = computed(() => stripBrokenImages(props.markInfo));
@@ -115,6 +119,9 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
     border-radius: 2px;
     background-color: rgba(106, 101, 101, 0.5);
   }
+  strong {
+    color: v-bind(themeColor);
+  }
   .table_div {
     width: fit-content;
     position: relative;
@@ -122,6 +129,28 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
       img {
         opacity: 1;
       }
+    }
+  }
+  .pre_div {
+    position: relative;
+    &:hover {
+      .copy_btn {
+        opacity: 1;
+      }
+    }
+    .copy_btn {
+      cursor: pointer;
+      color: #fff;
+      z-index: 2;
+      background-color: gray;
+      padding: 2px 5px;
+      border-radius: 2px;
+      font-size: 12px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      opacity: 0;
+      transition: opacity 0.6s;
     }
   }
   .download_btn {
@@ -137,7 +166,7 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
       overflow: hidden;
       display: inline-block;
       cursor: pointer;
-      transition: opacity 1s;
+      transition: opacity 0.6s;
     }
   }
   * {

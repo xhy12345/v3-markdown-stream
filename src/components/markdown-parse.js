@@ -2,6 +2,7 @@ import { h, defineComponent, createVNode, computed } from "vue";
 import { Fragment, jsxs, jsx } from "vue/jsx-runtime";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import TableCode from './tableCode';
+import PreCode from './preCode';
 import remarkParse from "remark-parse";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
@@ -51,7 +52,8 @@ export default defineComponent({
         const generateVueNode = (tree) => { // 获取vue虚拟dom
             const vueVnode = toJsxRuntime(tree, {
                 components:{
-                    table: TableCode
+                    table: TableCode,
+                    pre: PreCode,
                 },
                 Fragment,
                 jsx: jsx,

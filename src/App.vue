@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="mark_content" ref="messageContent" @wheel="touchmove">
-      <MarkdownRender :markInfo="markInfo"/>
+      <MarkdownRender :markInfo="markInfo" themeColor="#000000"/>
     </div>
   </div>
 </template>
