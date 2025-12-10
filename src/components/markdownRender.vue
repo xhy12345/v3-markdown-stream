@@ -1,5 +1,5 @@
 <template>
-  <div class="v3_markdown_stream_render">
+  <div class="v3_markdown_stream_render_mo020">
     <VueMarkdownStreamRender :markstr="markString" />
   </div>
 </template>
@@ -105,7 +105,7 @@ let props = defineProps({
 let markString = computed(() => stripBrokenImages(props.markInfo));
 </script>
 <style lang="scss">
-.v3_markdown_stream_render {
+.v3_markdown_stream_render_mo020 {
   --link-color: #0c5ccb;
   ::-webkit-scrollbar {
     width: 5px;
@@ -114,6 +114,31 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
   ::-webkit-scrollbar-thumb {
     border-radius: 2px;
     background-color: rgba(106, 101, 101, 0.5);
+  }
+  .table_div {
+    width: fit-content;
+    position: relative;
+    &:hover {
+      img {
+        opacity: 1;
+      }
+    }
+  }
+  .download_btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    img {
+      width: 20px;
+      opacity: 0;
+      height: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgb(185, 185, 185);
+      overflow: hidden;
+      display: inline-block;
+      cursor: pointer;
+      transition: opacity 1s;
+    }
   }
   * {
     animation: fade-in 0.6s ease-in-out;
