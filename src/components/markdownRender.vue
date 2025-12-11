@@ -103,6 +103,10 @@ let props = defineProps({
   themeColor: {
     type: String,
     default: "#000000",
+  },
+  baseFontSize: {
+    type: String,
+    default: "1em",
   }
 });
 
@@ -111,6 +115,7 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
 <style lang="scss">
 .v3_markdown_stream_render_mo020 {
   --link-color: #0c5ccb;
+  font-size: v-bind(baseFontSize);
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
