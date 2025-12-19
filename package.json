@@ -1,7 +1,7 @@
 {
   "name": "v3-markdown-stream",
   "private": false,
-  "version": "1.1.4",
+  "version": "1.1.5",
   "type": "module",
   "author": "xianghy",
   "license": "MIT",
