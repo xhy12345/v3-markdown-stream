@@ -1,17 +1,24 @@
 <template>
   <div class="v3_markdown_stream_render_mo020">
-    <VueMarkdownStreamRender :markstr="markString" />
+    <VueMarkdownStreamRender :markstr="markString" :pluginRegistry="pluginRegistry || defaultRegistry" :onRefClick="handleRefClick" />
   </div>
 </template>
 <script setup>
-import { defineProps, computed } from "vue";
+import { defineProps, computed, defineEmits } from "vue";
 import VueMarkdownStreamRender from "./markdown-parse.js";
+import { LOADING_TAG } from './loading.js';
+import { createPluginRegistry } from './plugin.js';
 
-/**
- * 处理图片流式碎片
- * @param {string} markdown - 原始 Markdown 字符串
- * @returns {string} 清理后的 Markdown 字符串
- */
+const emit = defineEmits(['refClick']);
+
+const handleRefClick = (numbers) => {
+  emit('refClick', numbers);
+};
+
+const defaultRegistry = createPluginRegistry();
+
+const LOADING_PLACEHOLDER = `<${LOADING_TAG}></${LOADING_TAG}>`;
+
 function stripBrokenImages(md) {
   if(typeof(md) !== 'string') {
     console.log('%c v3-markdown-stream：请传正确的md字符串～ ','background:#ea2039;color:#ffffff;padding:2px 5px;')
@@ -23,10 +30,9 @@ function stripBrokenImages(md) {
   md = md.replace(
     /^\s*\[([^\]]+)\]:[ \t]*(\S+)(?:[ \t]+(["'])(?:(?!\3)[\s\S])*?)?$/gm,
     (s, id, src, quote) => {
-      // 如果捕获到开启引号却没闭合，或者 src 后直接换行（缺引号），都认为不完整
-      if (quote && !s.endsWith(quote)) return ""; // 引号没闭合
-      if (!quote && /["']$/.test(src)) return ""; // src 结尾多余引号，也视为异常
-      return s; // 完整定义，保留
+      if (quote && !s.endsWith(quote)) return LOADING_PLACEHOLDER;
+      if (!quote && /["']$/.test(src)) return LOADING_PLACEHOLDER;
+      return s;
     }
   );
   md = md.replace(
@@ -34,13 +40,13 @@ function stripBrokenImages(md) {
     (s, alt, body) => {
       const open = (body.match(/\(/g) || []).length;
       const close = (body.match(/\)/g) || []).length;
-      if (open !== close) return ""; // 括号不匹配 → 不完整
-      if (body.includes('"') && (body.match(/"/g) || []).length % 2) return "";
-      if (body.includes("'") && (body.match(/'/g) || []).length % 2) return "";
-      return s; // 完整，保留
+      if (open !== close) return LOADING_PLACEHOLDER;
+      if (body.includes('"') && (body.match(/"/g) || []).length % 2) return LOADING_PLACEHOLDER;
+      if (body.includes("'") && (body.match(/'/g) || []).length % 2) return LOADING_PLACEHOLDER;
+      return s;
     }
   );
-  md = md.replace(/!\[[^\]]*\]\([^)]*$/g, "");
+  md = md.replace(/!\[[^\]]*\]\([^)]*$/g, LOADING_PLACEHOLDER);
   return clearUnclosedBlockMath(filterInvalidTables(md));
 }
 
@@ -78,22 +84,15 @@ function filterInvalidTables(content) {
   });
 }
 
-/**
- * 清除 Markdown 中未闭合的块级公式（$$ 开头未闭合）
- * @param {string} markdown - 原始 Markdown 字符串
- * @returns {string} 处理后的 Markdown 字符串
- */
 function clearUnclosedBlockMath(markdown) {
-  // 统计 $$ 的数量
   const doubleDollarMatches = markdown.match(/\$\$/g);
   const doubleDollarCount = doubleDollarMatches
   ? doubleDollarMatches.length
   : 0;
 
-  // 如果 $$ 数量是奇数，说明有未闭合的 $$，删除最后一个 $$ 及其后的内容
   if (doubleDollarCount % 2 !== 0) {
   const lastIndex = markdown.lastIndexOf("$$");
-  return markdown.substring(0, lastIndex);
+  return markdown.substring(0, lastIndex) + LOADING_PLACEHOLDER;
   }
 
   return markdown;
@@ -112,6 +111,10 @@ let props = defineProps({
   baseFontSize: {
     type: String,
     default: "1em",
+  },
+  pluginRegistry: {
+    type: Object,
+    default: null,
   }
 });
 
@@ -129,6 +132,12 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
     border-radius: 2px;
     background-color: rgba(106, 101, 101, 0.5);
   }
+  ref {
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 0.3em;
+    color: v-bind(themeColor);
+  }
   strong {
     color: v-bind(themeColor);
   }
@@ -141,6 +150,109 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
       }
     }
   }
+  .three-body {
+  --uib-size: 35px;
+  --uib-speed: 0.8s;
+  --uib-color: v-bind(themeColor);
+  position: relative;
+  display: inline-block;
+  height: var(--uib-size);
+  width: var(--uib-size);
+  animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
+  }
+
+  .three-body__dot {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+  }
+
+  .three-body__dot:after {
+  content: '';
+  position: absolute;
+  height: 0%;
+  width: 100%;
+  padding-bottom: 100%;
+  background-color: var(--uib-color);
+  border-radius: 50%;
+  }
+
+  .three-body__dot:nth-child(1) {
+  bottom: 5%;
+  left: 0;
+  transform: rotate(60deg);
+  transform-origin: 50% 85%;
+  }
+
+  .three-body__dot:nth-child(1)::after {
+  bottom: 0;
+  left: 0;
+  animation: wobble1 var(--uib-speed) infinite ease-in-out;
+  animation-delay: calc(var(--uib-speed) * -0.3);
+  }
+
+  .three-body__dot:nth-child(2) {
+  bottom: 5%;
+  right: 0;
+  transform: rotate(-60deg);
+  transform-origin: 50% 85%;
+  }
+
+  .three-body__dot:nth-child(2)::after {
+  bottom: 0;
+  left: 0;
+  animation: wobble1 var(--uib-speed) infinite
+      calc(var(--uib-speed) * -0.15) ease-in-out;
+  }
+
+  .three-body__dot:nth-child(3) {
+  bottom: -5%;
+  left: 0;
+  transform: translateX(116.666%);
+  }
+
+  .three-body__dot:nth-child(3)::after {
+  top: 0;
+  left: 0;
+  animation: wobble2 var(--uib-speed) infinite ease-in-out;
+  }
+
+  @keyframes spin78236 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+  }
+
+  @keyframes wobble1 {
+  0%,
+    100% {
+    transform: translateY(0%) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-66%) scale(0.65);
+    opacity: 0.8;
+  }
+  }
+
+  @keyframes wobble2 {
+  0%,
+    100% {
+    transform: translateY(0%) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(66%) scale(0.65);
+    opacity: 0.8;
+  }
+  }
+
   .pre_div {
     position: relative;
     &:hover {
@@ -179,7 +291,7 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
       transition: opacity 0.6s;
     }
   }
-  * {
+  *:not(.v3md-plugin-container):not(.v3md-plugin-container *) {
     animation: fade-in 0.6s ease-in-out;
   }
   @keyframes fade-in {
@@ -189,6 +301,15 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
     100% {
       opacity: 1;
     }
+  }
+  .v3md-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .v3md-plugin-container {
+    animation: none !important;
   }
   a {
     color: var(--link-color);

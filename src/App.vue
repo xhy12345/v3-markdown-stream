@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="mark_content" ref="messageContent" @wheel="touchmove">
-      <MarkdownRender :markInfo="markInfo" themeColor="#000000"/>
+      <MarkdownRender :markInfo="markInfo" themeColor="#5D3FD3" :onRefClick="handleRefClick"/>
     </div>
   </div>
 </template>
@@ -10,9 +10,10 @@
   import { ref, onMounted, nextTick } from 'vue'
   import MarkdownRender from "./components/markdownRender.vue"
   import { streamContent } from './markdown.ts';
+
   let markInfo = ref('')
   let auoScroll = ref(true);
-  const messageContent = ref()// 消息体窗口
+  const messageContent = ref()
 
   const touchmove = (e)=> {
     if(e.deltaY < 0){
@@ -21,6 +22,10 @@
       auoScroll.value = true;
     }
   }
+  const handleRefClick = (numbers) => {
+    console.log('点击了引用:', numbers) // 例如 [3] 或 [1, 2, 3]
+  }
+
   const main = async () => {
     const source_txt = streamContent;
     let i = 0

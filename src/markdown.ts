@@ -7,6 +7,28 @@ export const streamContent =  `
 | 李四 | 30   | 设计师 |
 | 王五 | 28   | 产品经理 |
 
+## 0.自定义组件（图表）
+
+### 柱状图
+
+以下是柱状图表，自定义组件穿插markdown内展示：
+
+[[echarts {"type":"bar","data":[10,20,30,40,50]}]]
+
+### 折线图（自定义宽高）
+
+以下是折线图表，自定义组件穿插markdown内展示：
+
+[[echarts {"type":"line","data":[120,200,150,80,70,110,130],"width":"100%","height":"250px"}]]
+
+### 饼图
+
+以下是饼图表，自定义组件穿插markdown内展示：
+
+[[echarts {"series":[{"type":"pie","data":[{"value":1048,"name":"Chrome"},{"value":735,"name":"Firefox"},{"value":580,"name":"Safari"},{"value":484,"name":"Edge"}]}],"tooltip":{"trigger":"item"},"legend":{"bottom":"0%","left":"center"}}]]
+
+
+
 ## 1. 文本格式
 
 这是**粗体文本**，这是*斜体文本*，这是***加粗斜体***。
@@ -17,7 +39,7 @@ export const streamContent =  `
 
 这是^上标^和~下标~。
 
-啦啦啦德玛西亚，啦啦啦<br>皇子开大
+啦啦啦德玛西亚，啦啦啦<br>皇子开大 <ref>[3]</ref>
 
 这是内联代码：\`let hello = 'world'\`。
 
@@ -238,4 +260,5 @@ Français: Bonjour Monde!
 
 ## 总结
 
-本示例涵盖了Markdown的所有主要功能，包括基本语法、扩展语法和特殊功能。`
+本示例涵盖了Markdown的所有主要功能，包括基本语法、扩展语法和特殊功能。
+`

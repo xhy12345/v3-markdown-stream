@@ -1,8 +1,10 @@
-import { h, defineComponent, createVNode, computed } from "vue";
+import { h, defineComponent, createVNode, computed, provide, inject } from "vue";
 import { Fragment, jsxs, jsx } from "vue/jsx-runtime";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import TableCode from './tableCode';
 import PreCode from './preCode';
+import { V3mdLoading, LOADING_TAG } from './loading.js';
+import { RefTag, REF_CLICK_KEY } from './ref-tag.js';
 import remarkParse from "remark-parse";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
@@ -23,13 +25,26 @@ export default defineComponent({
             type: String,
             required: true,
             default: ''
+        },
+        pluginRegistry: {
+            type: Object,
+            default: null
+        },
+        onRefClick: {
+            type: Function,
+            default: null
         }
     },
     errorCaptured(e) {
         console.error("解析报错", e);
     },
     setup(props) {
-        let unifiedProcessor = computed(() => { // unified解析器工具链初始化
+        provide(REF_CLICK_KEY, (numbers) => {
+            if (props.onRefClick) {
+                props.onRefClick(numbers);
+            }
+        });
+        let unifiedProcessor = computed(() => {
             const processor = unified()
                 .use(remarkParse, { allowDangerousHtml: true})
                 .use(remarkFlexibleContainers)
@@ -43,17 +58,26 @@ export default defineComponent({
             return processor;
         });
 
-        const createFile = (markstr) => { // markdown字符串转file
+        const createFile = (markstr) => {
             const file = new VFile();
             file.value = markstr;
             return file;
         };
 
-        const generateVueNode = (tree) => { // 获取vue虚拟dom
+        const generateVueNode = (tree) => {
+            const baseComponents = {
+                table: TableCode,
+                pre: PreCode,
+                [LOADING_TAG]: V3mdLoading,
+                ref: RefTag,
+            };
+            const pluginComponents = props.pluginRegistry
+                ? props.pluginRegistry.getComponentMappings()
+                : {};
             const vueVnode = toJsxRuntime(tree, {
-                components:{
-                    table: TableCode,
-                    pre: PreCode,
+                components: {
+                    ...baseComponents,
+                    ...pluginComponents,
                 },
                 Fragment,
                 jsx: jsx,
@@ -66,12 +90,16 @@ export default defineComponent({
         const computedVNode = computed(() => {
             if(props.markstr) {
                 const processor = unifiedProcessor.value;
-                const file = createFile(props.markstr);
+                let markdown = props.markstr;
+                if (props.pluginRegistry) {
+                    markdown = props.pluginRegistry.transformMarkdown(markdown);
+                }
+                const file = createFile(markdown);
                 let result = generateVueNode(processor.runSync(processor.parse(file), file));
                 return result;
             } else {
                 return createVNode('div',null,null);
-            }            
+            }
         });
 
         return () => {

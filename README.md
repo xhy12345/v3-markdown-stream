@@ -19,6 +19,8 @@
 - 🎨 **样式友好**：内置美观的默认样式，支持自定义主题颜色
 - 🚀 **高性能**：使用 Vue 的 computed 缓存和响应式系统优化渲染性能
 - 📋 **全面的 Markdown 支持**：代码高亮、GFM、原生Html标签、表格支持导出、代码支持可复制
+- 🧩 **插件系统**：支持自定义组件渲染插件，可在 Markdown 中嵌入 ECharts 图表等自定义 Vue 组件
+- ⏳ **碎片 Loading**：流式输出中不完整的图片、数学公式、插件语法自动展示 loading 动画
 
 ## 安装
 
@@ -58,6 +60,132 @@ const markdownContent = ref('# Hello World\n\nThis is a simple markdown example.
 |markInfo|是|String|''|Markdown 文本内容，可以一次性传入完整内容，也可以通过流式方式逐步添加内容|
 |themeColor|否|String|'#000000'|主题色（Strong标签字体颜色）|
 |baseFontSize|否|String|'1em'|基础字体大小|
+|pluginRegistry|否|Object|null|插件注册表，通过 `createPluginRegistry` 创建，用于支持自定义组件渲染|
+
+## 事件
+
+|事件名|参数|描述|
+|-|-|-|
+|refClick|numbers: number[]|当 `<ref>` 标签被点击时触发，参数为从 `[3]` 或 `[1,2,3]` 中提取的数字数组|
+
+### 用法示例
+
+```vue
+<template>
+  <MarkdownRender :markInfo="content" @refClick="onRefClick" />
+</template>
+
+<script setup>
+const onRefClick = (numbers) => {
+  console.log('点击了引用:', numbers) // 例如 [3] 或 [1, 2, 3]
+}
+</script>
+```
+
+Markdown 中使用：
+
+```markdown
+这是引用文献<ref>[3]</ref>
+这是多个引用<ref>[1,2,3]</ref>
+```
+
+## 插件系统
+
+插件系统允许你在 Markdown 中嵌入自定义 Vue 组件。**ECharts 图表插件已内置**，无需手动引入即可直接使用。
+
+### 基本用法
+
+ECharts 插件默认内置，直接在 Markdown 中使用 `[[echarts ...]]` 语法即可：
+
+```vue
+<template>
+  <div>
+    <MarkdownRender :markInfo="markdownContent" />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { MarkdownRender } from 'v3-markdown-stream';
+import 'v3-markdown-stream/dist/v3-markdown-stream.css';
+
+const markdownContent = ref('# 图表\n\n[[echarts {"type":"bar","data":[10,20,30]}]]')
+</script>
+```
+
+### Markdown 语法
+
+在 Markdown 中使用 `[[插件名 JSON配置]]` 的语法嵌入自定义组件：
+
+```markdown
+[[echarts {"type":"bar","data":[10,20,30,40,50]}]]
+
+[[echarts {"type":"line","data":[120,200,150,80,70,110,130],"width":"100%","height":"250px"}]]
+
+[[echarts {"series":[{"type":"pie","data":[{"value":1048,"name":"Chrome"},{"value":735,"name":"Firefox"}]}],"tooltip":{"trigger":"item"}}]]
+```
+
+### ECharts 插件
+
+ECharts 插件支持以下配置：
+
+|配置项|类型|默认值|描述|
+|-|-|-|-|
+|type|String|-|图表类型：bar、line、pie 等（简单模式）|
+|data|Array|-|图表数据（简单模式，配合 type 使用）|
+|width|String|'100%'|图表容器宽度|
+|height|String|'300px'|图表容器高度|
+|series|Array|-|ECharts series 配置（完整模式，与 type 互斥）|
+|其他|Any|-|所有 ECharts option 配置项均可传入|
+
+- **简单模式**：传入 `type` + `data`，自动补全坐标轴等配置
+- **完整模式**：直接传入 ECharts 的 `option` 配置，支持所有 ECharts 功能
+
+### 自定义插件
+
+你可以创建自己的插件，只需定义一个符合接口的对象：
+
+```js
+import { createPluginPattern } from 'v3-markdown-stream'
+
+const myPlugin = {
+  name: 'mywidget',                          // 插件名（用于 [[mywidget ...]] 语法）
+  tagName: 'v3md-mywidget',                  // 自定义 HTML 标签名
+  pattern: createPluginPattern('mywidget'),  // 匹配正则（或自定义 RegExp）
+  component: MyWidgetVueComponent,           // Vue 组件，接收 config prop
+}
+
+const registry = createPluginRegistry([myPlugin])
+```
+
+插件组件会通过 `config` prop 接收解析后的 JSON 配置对象：
+
+```vue
+<script setup>
+const props = defineProps({
+  config: {
+    type: Object,
+    default: () => ({})
+  }
+})
+</script>
+```
+
+### API
+
+#### `createPluginRegistry(plugins)`
+
+创建插件注册表。
+
+- **参数**：`plugins: Array<Plugin>` — 插件数组
+- **返回**：插件注册表对象，传入 `MarkdownRender` 的 `pluginRegistry` prop
+
+#### `createPluginPattern(name)`
+
+根据插件名生成匹配 `[[name ...]]` 语法的正则表达式。
+
+- **参数**：`name: String` — 插件名
+- **返回**：`RegExp` — 全局正则表达式
 
 
 [GitHub源码仓库地址](https://github.com/xhy12345/v3-markdown-stream)
