@@ -1,6 +1,14 @@
 export const streamContent =  `
 # Markdown 全面功能演示
 
+<div style="display: flex; justify-content: space-around;">
+  <video src="https://cdn.jsdelivr.net/gh/xdlumia/files/video-play/IronMan.mp4" type="video/mp4" controls width="300px;">
+  </video>
+  <video controls width="300px;">
+    <source src="https://cdn.jsdelivr.net/gh/xdlumia/files/video-play/IronMan.mp4" type="video/mp4">
+  </video>
+</div>
+
 | 姓名 | 年龄 | 职业 |
 |------|------|------|
 | 张三 | 25   | 工程师 |

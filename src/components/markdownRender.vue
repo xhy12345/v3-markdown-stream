@@ -124,7 +124,6 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
 .v3_markdown_stream_render_mo020 {
   --link-color: #0c5ccb;
   font-size: v-bind(baseFontSize);
-  white-space: nowrap;
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -144,6 +143,7 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
   }
   .table_div {
     width: fit-content;
+    max-width: 100%;
     position: relative;
     &:hover {
       img {
