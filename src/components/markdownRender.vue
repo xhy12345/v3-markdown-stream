@@ -280,6 +280,7 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
     position: absolute;
     top: 5px;
     right: 5px;
+    cursor: pointer;
     img {
       width: 20px;
       opacity: 0;

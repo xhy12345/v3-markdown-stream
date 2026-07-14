@@ -1,6 +1,8 @@
 export const streamContent =  `
 # Markdown 全面功能演示
 
+## 视频播放
+
 <div style="display: flex; justify-content: space-around;">
   <video src="https://cdn.jsdelivr.net/gh/xdlumia/files/video-play/IronMan.mp4" type="video/mp4" controls width="300px;">
   </video>
@@ -9,13 +11,7 @@ export const streamContent =  `
   </video>
 </div>
 
-| 姓名 | 年龄 | 职业 |
-|------|------|------|
-| 张三 | 25   | 工程师 |
-| 李四 | 30   | 设计师 |
-| 王五 | 28   | 产品经理 |
-
-## 0.自定义组件（图表）
+## 自定义组件（图表）
 
 ### 柱状图
 
@@ -35,9 +31,18 @@ export const streamContent =  `
 
 [[echarts {"series":[{"type":"pie","data":[{"value":1048,"name":"Chrome"},{"value":735,"name":"Firefox"},{"value":580,"name":"Safari"},{"value":484,"name":"Edge"}]}],"tooltip":{"trigger":"item"},"legend":{"bottom":"0%","left":"center"}}]]
 
+### 流程图（Mermaid）
+
+以下是Mermaid流程图，自定义组件穿插markdown内展示：
+
+[[mermaid {"code":"graph TD\\n    A[开始] --> B{判断条件}\\n    B -->|是| C[执行操作1]\\n    B -->|否| D[执行操作2]\\n    C --> E[结束]\\n    D --> E"}]]
+
+### 时序图（Mermaid）
+
+[[mermaid {"code":"sequenceDiagram\\n    participant 用户\\n    participant 服务器\\n    participant 数据库\\n    用户->>服务器: 发送请求\\n    服务器->>数据库: 查询数据\\n    数据库-->>服务器: 返回结果\\n    服务器-->>用户: 响应数据"}]]
 
 
-## 1. 文本格式
+## 文本格式
 
 这是**粗体文本**，这是*斜体文本*，这是***加粗斜体***。
 
@@ -51,7 +56,7 @@ export const streamContent =  `
 
 这是内联代码：\`let hello = 'world'\`。
 
-## 2. 标题层级
+## 标题层级
 
 # 一级标题
 ## 二级标题
@@ -60,7 +65,7 @@ export const streamContent =  `
 ##### 五级标题
 ###### 六级标题
 
-## 3. 列表
+## 列表
 
 ### 无序列表
 - 项目一
@@ -84,7 +89,7 @@ export const streamContent =  `
 - [x] 另一个已完成任务
 - [ ] 另一个未完成任务
 
-## 4. 链接和图片
+## 链接和图片
 
 ### 链接
 [百度](https://www.baidu.com)
@@ -93,9 +98,9 @@ export const streamContent =  `
 [相对路径链接](./assets/vue.svg)
 
 ### 图片
-![Vue Logo](https://img0.baidu.com/it/u=736188794,4119241415&fm=253&fmt=auto&app=120&f=JPEG?w=1140&h=760 "Vue.js Logo")
+![Vue Logo](https://img0.baidu.com/it/u=736188794,4119241415&fm=253&fmt=auto&app=120&f=JPEG?w=340&h=260 "Vue.js Logo")
 
-## 5. 代码块
+## 代码块
 
 ### 普通代码块
 \`\`\`
@@ -143,10 +148,14 @@ print("Fibonacci(10) = " + str(fibonacci(10)))
 </html>
 \`\`\`
 
-## 6. 表格
+## 表格
 
 ### 基本表格
-
+| 姓名 | 年龄 | 职业 |
+|------|------|------|
+| 张三 | 25   | 工程师 |
+| 李四 | 30   | 设计师 |
+| 王五 | 28   | 产品经理 |
 
 ### 带对齐的表格
 | 左对齐 | 居中对齐 | 右对齐 |
@@ -154,7 +163,7 @@ print("Fibonacci(10) = " + str(fibonacci(10)))
 | 内容1  |  内容2   |  内容3 |
 | 很长很长的内容 |  居中内容  |  12345 |
 
-## 7. 引用块
+## 引用块
 
 > 这是一个基本引用块。
 
@@ -166,7 +175,7 @@ print("Fibonacci(10) = " + str(fibonacci(10)))
 > 多行文本
 > 和**格式化文本**
 
-## 8. 水平线
+## 水平线
 
 ---
 
@@ -174,7 +183,7 @@ print("Fibonacci(10) = " + str(fibonacci(10)))
 
 ___
 
-## 9. 数学公式（KaTeX）
+## 数学公式（KaTeX）
 
 ### 内联数学公式
 $E = mc^2$ 是爱因斯坦的质能方程。
@@ -192,7 +201,7 @@ $$
 \\int_{a}^{b} f(x) dx
 $$
 
-## 10. 提示框
+## 提示框
 
 ::: warning
 这是一个警告块。
@@ -206,7 +215,7 @@ $$
 这是一个错误块。
 :::
 
-## 11. 原生HTML标签
+## 原生HTML标签
 
 <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
   <p>这是使用原生HTML创建的内容块。</p>
@@ -219,7 +228,7 @@ $$
 </details>
 
 
-## 14. 定义列表
+## 定义列表
 
 术语1
 : 术语1的定义
@@ -228,20 +237,20 @@ $$
 术语2
 : 术语2的定义
 
-## 15. 自动链接和邮箱
+## 自动链接和邮箱
 
 https://www.github.com
 
 user@example.com
 
-## 16. 转义字符
+## 转义字符
 
 \\# 这不是一个标题
 \\* 这不是斜体文本
 \\[\\] 这不是一个链接
 \\\\ 这是一个反斜杠
 
-## 17. 特殊字符和多语言支持
+## 特殊字符和多语言支持
 
 ### 特殊符号
 © ® ™ ± ÷ × ∑ ∫ √ ∞ ≈ ≠ ≤ ≥
@@ -255,7 +264,7 @@ Français: Bonjour Monde!
 Русский: Привет, мир!
 العربية: مرحبا بالعالم!
 
-## 18. 高级代码块（带行号）
+## 高级代码块（带行号）
 \`\`\`javascript
 1| // 这是第1行注释
 2| function calculateSum(a, b) {
