@@ -14,7 +14,7 @@ const ImgTag = defineComponent({
   },
   setup(props) {
     return () => {
-      const style = {};
+      const style = {borderRadius: '8px'};
       if (props.src) {
         try {
           const url = new URL(props.src);

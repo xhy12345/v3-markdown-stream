@@ -1,7 +1,11 @@
 import { h, defineComponent, ref, watch, onMounted, onUnmounted, shallowRef } from 'vue';
 
-const EChartsComponent = defineComponent({
-  name: 'V3mdEcharts',
+/**
+ * ECharts 纯渲染器组件
+ * 只负责将 ECharts config 渲染为图表，不包含任何 UI 包装（工具栏、按钮等由 CodeBlockCard 管理）
+ */
+export const EChartsRenderer = defineComponent({
+  name: 'V3mdEchartsRenderer',
   props: {
     config: {
       type: Object,
@@ -12,9 +16,6 @@ const EChartsComponent = defineComponent({
     const chartRef = ref(null);
     const chartInstance = shallowRef(null);
     const initFailed = ref(false);
-
-    const width = ref(props.config.width || '100%');
-    const height = ref(props.config.height || '300px');
 
     let lastConfigJson = '';
 
@@ -62,8 +63,6 @@ const EChartsComponent = defineComponent({
       const newJson = JSON.stringify(newConfig);
       if (newJson === lastConfigJson) return;
       lastConfigJson = newJson;
-      if (newConfig.width) width.value = newConfig.width;
-      if (newConfig.height) height.value = newConfig.height;
       chartInstance.value.setOption(getOption(newConfig));
     };
 
@@ -90,14 +89,32 @@ const EChartsComponent = defineComponent({
     return () => {
       if (initFailed.value) {
         return h('div', {
-          style: { color: '#999', padding: '10px' },
+          style: { color: '#999', padding: '20px', textAlign: 'center', fontSize: '13px' },
         }, 'ECharts 加载失败，请确保已安装 echarts 依赖');
       }
       return h('div', {
         ref: chartRef,
-        style: { width: width.value, height: height.value },
+        class: 'v3md-echarts-renderer',
+        style: { width: '100%', height: '300px' },
       });
     };
+  },
+});
+
+/**
+ * 兼容 [[echarts ...]] 插件语法的包装组件
+ * 将 config 转发给 EChartsRenderer
+ */
+const EChartsLegacyWrapper = defineComponent({
+  name: 'V3mdEchartsLegacy',
+  props: {
+    config: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
+    return () => h(EChartsRenderer, { config: props.config });
   },
 });
 
@@ -105,5 +122,5 @@ export const echartsPlugin = {
   name: 'echarts',
   tagName: 'v3md-echarts',
   pattern: /\[\[echarts\s+([\s\S]*?)\]\]/g,
-  component: EChartsComponent,
+  component: EChartsLegacyWrapper,
 };

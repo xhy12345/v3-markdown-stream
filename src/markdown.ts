@@ -1,45 +1,120 @@
 export const streamContent =  `
 # Markdown 全面功能演示
 
-## 视频播放
+## 报告文档链接
 
-<div style="display: flex; justify-content: space-around;">
-  <video src="https://cdn.jsdelivr.net/gh/xdlumia/files/video-play/IronMan.mp4" type="video/mp4" controls width="300px;">
-  </video>
-  <video controls width="300px;">
-    <source src="https://cdn.jsdelivr.net/gh/xdlumia/files/video-play/IronMan.mp4" type="video/mp4">
-  </video>
-</div>
+以下为报告文档下载卡片示例（链接包含 \`type=result\` 参数时自动渲染为卡片）：
+
+[AI客服平台 — 需求文档](https://example.com/report/requirement.pdf?type=result&format=pdf)
+
+[2026年度技术报告](https://example.com/report/tech-2026.docx?type=result&format=docx)
+
+[数据分析结果汇总](https://example.com/report/data-analysis.xlsx?type=result&format=xlsx)
 
 ## 自定义组件（图表）
 
 ### 柱状图
 
-以下是柱状图表，自定义组件穿插markdown内展示：
+以下是柱状图表，使用代码块语法展示：
 
-[[echarts {"type":"bar","data":[10,20,30,40,50]}]]
+\`\`\`echarts
+{
+  "title": { "text": "月度销售额" },
+  "tooltip": { "trigger": "axis" },
+  "legend": { "data": ["销量"] },
+  "xAxis": { "type": "category", "data": ["一月", "二月", "三月", "四月", "五月"] },
+  "yAxis": { "type": "value" },
+  "series": [{ "name": "销量", "type": "bar", "data": [10, 20, 30, 40, 50] }]
+}
+\`\`\`
 
-### 折线图（自定义宽高）
+### 折线图
 
-以下是折线图表，自定义组件穿插markdown内展示：
+以下是折线图表，使用代码块语法展示：
 
-[[echarts {"type":"line","data":[120,200,150,80,70,110,130],"width":"100%","height":"250px"}]]
+\`\`\`echarts
+{
+  "title": { "text": "未来一周气温变化" },
+  "tooltip": { "trigger": "axis" },
+  "legend": {},
+  "xAxis": {
+    "type": "category",
+    "boundaryGap": false,
+    "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  },
+  "yAxis": {
+    "type": "value",
+    "axisLabel": { "formatter": "{value} °C" }
+  },
+  "series": [
+    {
+      "name": "Highest",
+      "type": "line",
+      "data": [10, 11, 13, 11, 12, 12, 9],
+      "markPoint": { "data": [{ "type": "max", "name": "Max" }, { "type": "min", "name": "Min" }] },
+      "markLine": { "data": [{ "type": "average", "name": "Avg" }] }
+    },
+    {
+      "name": "Lowest",
+      "type": "line",
+      "data": [1, -2, 2, 5, 3, 2, 0],
+      "markPoint": { "data": [{ "name": "周最低", "value": -2, "xAxis": 1, "yAxis": -1.5 }] },
+      "markLine": { "data": [{ "type": "average", "name": "Avg" }, [{ "symbol": "none", "x": "90%", "yAxis": "max" }, { "symbol": "circle", "label": { "position": "start", "formatter": "Max" }, "type": "max", "name": "最高点" }]] }
+    }
+  ]
+}
+\`\`\`
 
 ### 饼图
 
-以下是饼图表，自定义组件穿插markdown内展示：
+以下是饼图表，使用代码块语法展示：
 
-[[echarts {"series":[{"type":"pie","data":[{"value":1048,"name":"Chrome"},{"value":735,"name":"Firefox"},{"value":580,"name":"Safari"},{"value":484,"name":"Edge"}]}],"tooltip":{"trigger":"item"},"legend":{"bottom":"0%","left":"center"}}]]
+\`\`\`echarts
+{
+  "title": { "text": "浏览器市场份额", "left": "center" },
+  "tooltip": { "trigger": "item", "formatter": "{a} <br/>{b}: {c} ({d}%)" },
+  "legend": { "bottom": "0%" },
+  "series": [
+    {
+      "name": "访问来源",
+      "type": "pie",
+      "radius": "50%",
+      "data": [
+        { "value": 1048, "name": "Chrome" },
+        { "value": 735, "name": "Firefox" },
+        { "value": 580, "name": "Safari" },
+        { "value": 484, "name": "Edge" }
+      ]
+    }
+  ]
+}
+\`\`\`
 
 ### 流程图（Mermaid）
 
-以下是Mermaid流程图，自定义组件穿插markdown内展示：
+以下是Mermaid流程图，使用代码块语法展示：
 
-[[mermaid {"code":"graph TD\\n    A[开始] --> B{判断条件}\\n    B -->|是| C[执行操作1]\\n    B -->|否| D[执行操作2]\\n    C --> E[结束]\\n    D --> E"}]]
+\`\`\`mermaid
+graph TD
+    A[开始] --> B{判断条件}
+    B -->|是| C[执行操作1]
+    B -->|否| D[执行操作2]
+    C --> E[结束]
+    D --> E
+\`\`\`
 
 ### 时序图（Mermaid）
 
-[[mermaid {"code":"sequenceDiagram\\n    participant 用户\\n    participant 服务器\\n    participant 数据库\\n    用户->>服务器: 发送请求\\n    服务器->>数据库: 查询数据\\n    数据库-->>服务器: 返回结果\\n    服务器-->>用户: 响应数据"}]]
+\`\`\`mermaid
+sequenceDiagram
+    participant 用户
+    participant 服务器
+    participant 数据库
+    用户->>服务器: 发送请求
+    服务器->>数据库: 查询数据
+    数据库-->>服务器: 返回结果
+    服务器-->>用户: 响应数据
+\`\`\`
 
 
 ## 文本格式
@@ -278,4 +353,5 @@ Français: Bonjour Monde!
 ## 总结
 
 本示例涵盖了Markdown的所有主要功能，包括基本语法、扩展语法和特殊功能。
+
 `

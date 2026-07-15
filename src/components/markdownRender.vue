@@ -374,5 +374,307 @@ let markString = computed(() => stripBrokenImages(props.markInfo));
     padding-left: 1em;
     margin: 10px;
   }
+
+  /* ============ Code Block Card 样式 ============ */
+  .v3md-code-block-card {
+    position: relative;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin: 12px 0;
+
+    .card-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 40px;
+      padding: 0 12px;
+      background: #fafafa;
+      border-bottom: 1px solid #e2e8f0;
+      user-select: none;
+
+      .card-toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .card-type-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .card-type-icon {
+        display: inline-flex;
+      }
+
+      .card-toolbar-center {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .card-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #666;
+        line-height: 1;
+        transition: all 0.15s;
+
+        > span {
+          display: flex;
+          align-items: center;
+          vertical-align: middle;
+        }
+
+        &:hover {
+          background: #e8e8e8;
+        }
+
+        &.active {
+          color: #333;
+          font-weight: 600;
+          background: #e0e0e0;
+        }
+      }
+
+      .card-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+    }
+
+    .card-toolbar-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 5px 7px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 4px;
+      color: #666;
+      font-size: 12px;
+      transition: all 0.15s;
+      line-height: 1;
+
+      &:hover {
+        background: #e8e8e8;
+        color: #333;
+      }
+
+      &.active {
+        color: #2563eb;
+        background: #dbeafe;
+      }
+
+      &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+    }
+
+    .card-content {
+      min-height: 100px;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+
+      &.is-dragging {
+        cursor: grabbing;
+      }
+    }
+
+    .v3md-card-preview-content {
+      position: relative;
+      min-height: 100px;
+      padding: 12px;
+    }
+
+    .v3md-card-source-content {
+      pre {
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        background: #1e1e1e;
+        padding: 16px;
+        margin: 0;
+
+        code {
+          color: #d4d4d4;
+          font-size: 13px;
+          font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+      }
+    }
+
+    .zoom-controls {
+      position: absolute;
+      right: 12px;
+      bottom: 8px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 3px 6px;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+      .zoom-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 3px;
+        color: #666;
+        padding: 0;
+
+        &:hover:not(:disabled) {
+          background: #e8e8e8;
+          color: #333;
+        }
+
+        &:disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+      }
+
+      .zoom-percent {
+        font-size: 11px;
+        color: #666;
+        min-width: 38px;
+        text-align: center;
+      }
+    }
+  }
+
+  /* 全屏遮罩 */
+  .v3md-fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    .v3md-code-block-card {
+      max-width: 90vw;
+      max-height: 90vh;
+      width: 90vw;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+
+      .card-content {
+        flex: 1;
+        overflow: auto;
+      }
+    }
+  }
+}
+
+/* 报告文档链接卡片 */
+.v3md-report-link-card {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  }
+
+  .v3md-report-link-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+
+    .v3md-report-link-icon {
+      flex-shrink: 0;
+      display: inline-flex;
+
+      :deep(svg) {
+        display: block;
+      }
+    }
+
+    .v3md-report-link-text {
+      font-size: 14px;
+      color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .v3md-report-link-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .v3md-report-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: #fff;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    :deep(svg) {
+      display: block;
+    }
+  }
 }
 </style>

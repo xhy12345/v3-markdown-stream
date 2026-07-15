@@ -12,6 +12,7 @@ dist
 docs
 dist-ssr
 *.local
+.trae
 
 # Editor directories and files
 .vscode/*

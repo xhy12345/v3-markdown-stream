@@ -6,6 +6,7 @@ import PreCode from './preCode';
 import { V3mdLoading, LOADING_TAG } from './loading.js';
 import { RefTag, REF_CLICK_KEY } from './ref-tag.js';
 import { ImgTag } from './img-tag.js';
+import { CODE_BLOCK_CARD_TAG, CodeBlockCard } from './code-block-card.js';
 import remarkParse from "remark-parse";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
@@ -72,6 +73,7 @@ export default defineComponent({
                 img: ImgTag,
                 [LOADING_TAG]: V3mdLoading,
                 ref: RefTag,
+                [CODE_BLOCK_CARD_TAG]: CodeBlockCard,
             };
             const pluginComponents = props.pluginRegistry
                 ? props.pluginRegistry.getComponentMappings()

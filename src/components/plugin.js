@@ -2,6 +2,8 @@ import { h, defineComponent, ref, watch, shallowRef } from 'vue';
 import { V3mdLoading, LOADING_TAG } from './loading.js';
 import { echartsPlugin } from './echarts-plugin.js';
 import { mermaidPlugin } from './mermaid-plugin.js';
+import { CODE_BLOCK_CARD_TAG, CodeBlockCard } from './code-block-card.js';
+import { ReportLinkCard, REPORT_LINK_TAG } from './report-link-card.js';
 
 const DEFAULT_PLUGINS = [echartsPlugin, mermaidPlugin];
 
@@ -34,26 +36,41 @@ export function createPluginRegistry(plugins = []) {
 
     let result = markdown;
 
-    // 转换 ```mermaid 代码块为插件标签
-    if (pluginMap.has('mermaid')) {
-      // 完整的 ```mermaid 代码块
-      result = result.replace(/```mermaid\s*\n([\s\S]*?)```/g, (match, code) => {
-        const config = JSON.stringify({ code: code.trimEnd() });
-        const encodedConfig = encodeURIComponent(config);
-        return `\n\n<div class="v3md-plugin-container"><v3md-mermaid data-config="${encodedConfig}" data-key="mermaid_block"></v3md-mermaid></div>\n\n`;
-      });
+    // 转换 ```mermaid 和 ```echarts 代码块为 v3md-code-block-card 标签
+    const codeBlockTypes = ['mermaid', 'echarts'];
+    for (const blockType of codeBlockTypes) {
+      if (pluginMap.has(blockType)) {
+        // 完整的代码块
+        result = result.replace(
+          new RegExp('```' + blockType + '\\s*\\n([\\s\\S]*?)```', 'g'),
+          (match, code) => {
+            const encodedType = encodeURIComponent(blockType);
+            const encodedCode = encodeURIComponent(code.trimEnd());
+            return `\n\n<div class="v3md-plugin-container"><${CODE_BLOCK_CARD_TAG} data-type="${encodedType}" data-code="${encodedCode}"></${CODE_BLOCK_CARD_TAG}></div>\n\n`;
+          }
+        );
 
-      // 未闭合的 ```mermaid 代码块（流式场景）
-      result = result.replace(/```mermaid\s*\n([\s\S]*?)$/g, (match, code) => {
-        if (code.trim()) {
-          const config = JSON.stringify({ code: code.trimEnd() });
-          const encodedConfig = encodeURIComponent(config);
-          return `\n\n<div class="v3md-plugin-container"><v3md-mermaid data-config="${encodedConfig}" data-key="mermaid_block"></v3md-mermaid></div>\n\n`;
-        }
-        return `\n\n<div class="v3md-plugin-container"><${LOADING_TAG}></${LOADING_TAG}></div>\n\n`;
-      });
+        // 未闭合的代码块（流式场景）
+        result = result.replace(
+          new RegExp('```' + blockType + '\\s*\\n([\\s\\S]*?)$', 'g'),
+          (match, code) => {
+            // Mermaid 在流式场景下不渲染，等代码块闭合后再渲染
+            if (blockType === 'mermaid') {
+              return `\n\n<div class="v3md-plugin-container"><${LOADING_TAG}></${LOADING_TAG}></div>\n\n`;
+            }
+            // ECharts 等其他类型：传部分代码，由 JSON.parse 校验决定渲染还是 loading
+            if (code.trim()) {
+              const encodedType = encodeURIComponent(blockType);
+              const encodedCode = encodeURIComponent(code.trimEnd());
+              return `\n\n<div class="v3md-plugin-container"><${CODE_BLOCK_CARD_TAG} data-type="${encodedType}" data-code="${encodedCode}"></${CODE_BLOCK_CARD_TAG}></div>\n\n`;
+            }
+            return `\n\n<div class="v3md-plugin-container"><${LOADING_TAG}></${LOADING_TAG}></div>\n\n`;
+          }
+        );
+      }
     }
 
+    // 处理 [[plugin ...]] 插件语法
     for (const [, plugin] of pluginMap) {
       const pattern = ensureGlobalFlag(plugin.pattern);
       let index = 0;
@@ -66,6 +83,7 @@ export function createPluginRegistry(plugins = []) {
       });
     }
 
+    // 处理未闭合的 [[plugin ...]] 语法（流式场景）
     for (const [, plugin] of pluginMap) {
       const incompleteRegex = new RegExp(
         `\\[\\[${escapeRegex(plugin.name)}\\b[\\s\\S]*$`,
@@ -76,6 +94,16 @@ export function createPluginRegistry(plugins = []) {
       });
     }
 
+    // 转换包含 type=result 参数的 Markdown 链接为报告链接卡片
+    result = result.replace(
+      /\[([^\]]+)\]\(([^)]*\?[^)]*type=result[^)]*)\)/g,
+      (match, text, url) => {
+        const encodedUrl = encodeURIComponent(url);
+        const encodedText = encodeURIComponent(text);
+        return `<div class="v3md-plugin-container"><${REPORT_LINK_TAG} data-url="${encodedUrl}" data-text="${encodedText}"></${REPORT_LINK_TAG}></div>`;
+      }
+    );
+
     return result;
   }
 
@@ -85,7 +113,33 @@ export function createPluginRegistry(plugins = []) {
     for (const [, plugin] of pluginMap) {
       cachedMappings[plugin.tagName] = createPluginWrapper(plugin);
     }
+    // 注册 CodeBlockCard 组件映射
+    cachedMappings[CODE_BLOCK_CARD_TAG] = defineComponent({
+      name: 'V3mdCodeBlockCardWrapper',
+      props: {
+        node: {
+          type: Object,
+          required: true,
+        },
+      },
+      setup(props) {
+        return () => h(CodeBlockCard, { node: props.node });
+      },
+    });
     cachedMappings[LOADING_TAG] = V3mdLoading;
+    // 注册 ReportLinkCard 组件映射
+    cachedMappings[REPORT_LINK_TAG] = defineComponent({
+      name: 'V3mdReportLinkCardWrapper',
+      props: {
+        node: {
+          type: Object,
+          required: true,
+        },
+      },
+      setup(props) {
+        return () => h(ReportLinkCard, { node: props.node });
+      },
+    });
     return cachedMappings;
   }
 

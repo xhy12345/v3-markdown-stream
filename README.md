@@ -20,7 +20,9 @@
 - 🚀 **高性能**：使用 Vue 的 computed 缓存和响应式系统优化渲染性能
 - 📋 **全面的 Markdown 支持**：代码高亮、GFM、原生Html标签、表格支持导出、代码支持可复制
 - 🧩 **插件系统**：支持自定义组件渲染插件，可在 Markdown 中嵌入 ECharts 图表等自定义 Vue 组件
-- ⏳ **碎片 Loading**：流式输出中不完整的图片、数学公式、插件语法自动展示 loading 动画
+- 📊 **Mermaid & ECharts**：支持 ` ```mermaid ` 和 ` ```echarts ` 代码块语法渲染图表，自带 Preview/Source 切换、复制、下载、缩放、全屏等功能
+- 📄 **报告文档链接**：自动识别 Markdown 链接中包含 `type=result` 参数的 URL，渲染为带下载按钮的文档卡片
+- ⏳ **碎片 Loading**：流式输出中不完整的图片、数学公式、插件语法、Mermaid/ECharts 代码块自动展示 loading 动画
 
 ## 安装
 
@@ -91,55 +93,92 @@ Markdown 中使用：
 
 ## 插件系统
 
-插件系统允许你在 Markdown 中嵌入自定义 Vue 组件。**ECharts 图表插件已内置**，无需手动引入即可直接使用。
+插件系统允许你在 Markdown 中嵌入自定义 Vue 组件。**ECharts 和 Mermaid 插件已内置**，无需手动引入即可直接使用。
 
 ### 基本用法
 
-ECharts 插件默认内置，直接在 Markdown 中使用 `[[echarts ...]]` 语法即可：
+内置插件支持两种语法：
 
-```vue
-<template>
-  <div>
-    <MarkdownRender :markInfo="markdownContent" />
-  </div>
-</template>
+#### 1. 代码块语法（推荐）
 
-<script setup>
-import { ref } from 'vue'
-import { MarkdownRender } from 'v3-markdown-stream';
-import 'v3-markdown-stream/dist/v3-markdown-stream.css';
+使用 ` ```mermaid ` 和 ` ```echarts ` 代码块，自带 Preview/Source 切换、复制、下载、缩放、全屏等功能卡片：
 
-const markdownContent = ref('# 图表\n\n[[echarts {"type":"bar","data":[10,20,30]}]]')
-</script>
+````markdown
+```mermaid
+graph TD
+    A[开始] --> B{判断条件}
+    B -->|是| C[执行操作1]
+    B -->|否| D[执行操作2]
+    C --> E[结束]
+    D --> E
 ```
 
-### Markdown 语法
+```echarts
+{
+  "title": { "text": "月度销售额" },
+  "tooltip": { "trigger": "axis" },
+  "xAxis": { "type": "category", "data": ["一月", "二月", "三月"] },
+  "yAxis": { "type": "value" },
+  "series": [{ "type": "bar", "data": [10, 20, 30] }]
+}
+```
+````
 
-在 Markdown 中使用 `[[插件名 JSON配置]]` 的语法嵌入自定义组件：
+- **ECharts**：代码块内容为完整的 ECharts `option` 对象（JSON 格式）
+- **Mermaid**：代码块内容为 Mermaid 语法文本
+- 流式输出时，Mermaid 代码块未闭合前显示 loading，闭合后自动渲染；ECharts 在 JSON 合法后渲染，非法时显示 loading
+
+#### 2. 插件语法（兼容）
+
+使用 `[[plugin JSON配置]]` 语法，直接渲染图表（无卡片包装）：
 
 ```markdown
 [[echarts {"type":"bar","data":[10,20,30,40,50]}]]
 
-[[echarts {"type":"line","data":[120,200,150,80,70,110,130],"width":"100%","height":"250px"}]]
-
-[[echarts {"series":[{"type":"pie","data":[{"value":1048,"name":"Chrome"},{"value":735,"name":"Firefox"}]}],"tooltip":{"trigger":"item"}}]]
+[[mermaid {"code":"graph TD\\n    A --> B"}]]
 ```
 
 ### ECharts 插件
 
-ECharts 插件支持以下配置：
+ECharts 支持两种使用方式：
+
+- **代码块语法**（推荐）：` ```echarts ` 代码块内容为完整的 ECharts `option` 对象（JSON），支持所有 ECharts 配置
+- **插件语法**：`[[echarts JSON配置]]`，支持简单模式和完整模式
 
 |配置项|类型|默认值|描述|
 |-|-|-|-|
-|type|String|-|图表类型：bar、line、pie 等（简单模式）|
-|data|Array|-|图表数据（简单模式，配合 type 使用）|
-|width|String|'100%'|图表容器宽度|
-|height|String|'300px'|图表容器高度|
+|type|String|-|图表类型：bar、line、pie 等（简单模式，仅插件语法）|
+|data|Array|-|图表数据（简单模式，仅插件语法）|
+|width|String|'100%'|图表容器宽度（仅插件语法）|
+|height|String|'300px'|图表容器高度（仅插件语法）|
 |series|Array|-|ECharts series 配置（完整模式，与 type 互斥）|
 |其他|Any|-|所有 ECharts option 配置项均可传入|
 
-- **简单模式**：传入 `type` + `data`，自动补全坐标轴等配置
+- **简单模式**（插件语法）：传入 `type` + `data`，自动补全坐标轴等配置
 - **完整模式**：直接传入 ECharts 的 `option` 配置，支持所有 ECharts 功能
+
+### Mermaid 插件
+
+Mermaid 支持两种使用方式：
+
+- **代码块语法**（推荐）：` ```mermaid ` 代码块内容为 Mermaid 语法文本，支持流程图、时序图、甘特图等
+- **插件语法**：`[[mermaid {"code":"..."}]]`，通过 `code` 字段传入 Mermaid 代码
+
+流式输出时，Mermaid 代码块未闭合前显示 loading，闭合后自动渲染，避免语法不合法时报错。
+
+### 报告文档链接
+
+当 Markdown 中出现链接 URL 包含 `type=result` 参数时，自动渲染为文档卡片（含文档图标 + 标题 + 下载按钮），无需额外配置：
+
+```markdown
+[AI客服平台 — 需求文档](https://example.com/report/requirement.pdf?type=result)
+
+[2026年度技术报告](https://example.com/report/tech-2026.docx?type=result&format=docx)
+```
+
+- 自动识别标准 Markdown 链接 `[文本](url)` 中 URL 是否包含 `type=result` 参数
+- 渲染为圆角卡片，左侧显示文档图标和标题，右侧显示下载按钮
+- 点击下载按钮触发文件下载，点击卡片区域在新窗口打开链接
 
 ### 自定义插件
 

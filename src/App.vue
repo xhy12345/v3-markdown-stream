@@ -27,6 +27,7 @@
   }
 
   const main = async () => {
+    // markInfo.value = streamContent;
     const source_txt = streamContent;
     let i = 0
     while (i < source_txt.length) {
