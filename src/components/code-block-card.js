@@ -456,12 +456,22 @@ export const CodeBlockCard = defineComponent({
       if (isEcharts.value) {
         let parsedConfig = null;
         try {
+          // 优先尝试 JSON.parse（标准 JSON）
           const parsed = JSON.parse(rawCode.value);
           if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
             parsedConfig = parsed;
           }
         } catch {
-          // JSON 不合法，显示 loading
+          // JSON.parse 失败时，尝试用 new Function 解析（支持含 function 的 ECharts 配置）
+          try {
+            const fn = new Function(`return (${rawCode.value})`);
+            const result = fn();
+            if (result && typeof result === 'object' && Object.keys(result).length > 0) {
+              parsedConfig = result;
+            }
+          } catch {
+            // 两种方式都失败，显示 loading
+          }
         }
         if (parsedConfig) {
           children.push(h(EChartsRenderer, { key: 'echarts-preview', config: parsedConfig }));
