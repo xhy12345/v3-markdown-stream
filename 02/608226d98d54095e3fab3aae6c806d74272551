@@ -1,0 +1,58 @@
+src/components/echarts-plugin.js
+  h_d55b76daec2866 30
+  s_a10b72521760bc::t_42b339b14757b3 22-29,31-60,63-148,151,169
+  s_ab00bb34921bb8::t_ccec0c69df5fc1 61
+package.json
+  h_d55b76daec2866 4
+src/components/code-block-card.js
+  s_a10b72521760bc::t_47d5d4f91e78ee 459,465-474
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "02608226d98d54095e3fab3aae6c806d74272551",
+  "prompts": {},
+  "humans": {
+    "h_d55b76daec2866": {
+      "author": "xianghengyu <1420734331@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_a10b72521760bc": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "69fadb27510e492c1bc861d2",
+        "model": "kimi-k3"
+      },
+      "human_author": "xianghengyu <1420734331@qq.com>",
+      "custom_attributes": {
+        "runtime_client": "trae-tob-git-ai",
+        "dedupe_key": "69fadb27510e492c1bc861d2:6a969207226e60961a898eeb:afterEdit:e5cab3e5",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "operation_id": "6a969207226e60961a898eeb",
+        "tool_use_id": "6a969207226e60961a898eeb",
+        "external_session_id": "69fadb27510e492c1bc861d2",
+        "source_scene": "agent",
+        "tool_type": "builtin",
+        "session_id": "69fadb27510e492c1bc861d2",
+        "edit_kind": "file_edit",
+        "client_type": "ide"
+      }
+    },
+    "s_ab00bb34921bb8": {
+      "agent_id": {
+        "tool": "trae-code-edit",
+        "id": "ai_tab-20260901165459010000071135939EAA2",
+        "model": "default"
+      },
+      "human_author": "xianghengyu <1420734331@qq.com>",
+      "custom_attributes": {
+        "client_type": "ide",
+        "source_scene": "cue",
+        "tool": "trae-code-edit",
+        "external_session_id": "20260901165459010000071135939EAA2",
+        "edit_kind": "file_edit"
+      }
+    }
+  }
+}
