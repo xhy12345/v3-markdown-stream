@@ -1,13 +1,47 @@
 <template>
-  <div class="v3_markdown_stream_render_mo020">
-    <VueMarkdownStreamRender :markstr="markString" :pluginRegistry="pluginRegistry || defaultRegistry" :onRefClick="handleRefClick" />
-  </div>
+  <div
+    ref="hostRef"
+    class="v3md-shadow-host"
+    v-bind="$attrs"
+    :style="hostVars"
+  ></div>
+  <Teleport v-if="shadowContainer" :to="shadowContainer">
+    <VueMarkdownStreamRender
+      :markstr="markString"
+      :pluginRegistry="pluginRegistry || defaultRegistry"
+      :onRefClick="handleRefClick"
+    />
+  </Teleport>
 </template>
+
 <script setup>
-import { defineProps, computed, defineEmits } from "vue";
+import { defineProps, defineOptions, computed, defineEmits, ref, shallowRef, onMounted } from "vue";
 import VueMarkdownStreamRender from "./markdown-parse.js";
 import { LOADING_TAG } from './loading.js';
 import { createPluginRegistry } from './plugin.js';
+import { SHADOW_CSS } from './shadow-styles.js';
+
+defineOptions({ inheritAttrs: false });
+
+const props = defineProps({
+  markInfo: {
+    type: String,
+    require: true,
+    default: "",
+  },
+  themeColor: {
+    type: String,
+    default: "#000000",
+  },
+  baseFontSize: {
+    type: String,
+    default: "1em",
+  },
+  pluginRegistry: {
+    type: Object,
+    default: null,
+  }
+});
 
 const emit = defineEmits(['refClick']);
 
@@ -98,583 +132,46 @@ function clearUnclosedBlockMath(markdown) {
   return markdown;
 }
 
-let props = defineProps({
-  markInfo: {
-    type: String,
-    require: true,
-    default: "",
-  },
-  themeColor: {
-    type: String,
-    default: "#000000",
-  },
-  baseFontSize: {
-    type: String,
-    default: "1em",
-  },
-  pluginRegistry: {
-    type: Object,
-    default: null,
-  }
-});
-
 let markString = computed(() => stripBrokenImages(props.markInfo));
+
+// ============ Shadow DOM 隔离 ============
+// 宿主元素（light DOM），承载主题相关的 CSS 变量
+const hostRef = ref(null);
+// 渲染内容的挂载点（shadow root 内部），用 shallowRef 避免 Vue 对 DOM 元素做响应式代理
+const shadowContainer = shallowRef(null);
+
+// 通过 CSS 变量把主题色 / 字号传递进 shadow tree（自定义属性可穿透 shadow 边界继承）
+const hostVars = computed(() => ({
+  '--v3md-theme-color': props.themeColor,
+  '--v3md-base-font-size': props.baseFontSize,
+}));
+
+onMounted(() => {
+  const host = hostRef.value;
+  if (!host) return;
+
+  // 复用已存在的 shadow root，避免 HMR / 重复挂载时报错
+  const shadow = host.shadowRoot || host.attachShadow({ mode: 'open' });
+
+  // 重置 shadow 内容（幂等）
+  shadow.innerHTML = '';
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = SHADOW_CSS;
+
+  // 渲染内容的容器，样式表中的 .v3_markdown_stream_render_mo020 即以此为根
+  const container = document.createElement('div');
+  container.className = 'v3_markdown_stream_render_mo020';
+
+  shadow.appendChild(styleEl);
+  shadow.appendChild(container);
+
+  shadowContainer.value = container;
+});
 </script>
-<style lang="scss">
-.v3_markdown_stream_render_mo020 {
-  --link-color: #0c5ccb;
-  font-size: v-bind(baseFontSize);
-  ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-radius: 2px;
-    background-color: rgba(106, 101, 101, 0.5);
-  }
-  ref {
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 0.3em;
-    color: v-bind(themeColor);
-  }
-  strong {
-    color: v-bind(themeColor);
-  }
-  .table_div {
-    width: fit-content;
-    max-width: 100%;
-    position: relative;
-    &:hover {
-      img {
-        opacity: 1;
-      }
-    }
-  }
-  .three-body {
-  --uib-size: 35px;
-  --uib-speed: 0.8s;
-  --uib-color: v-bind(themeColor);
-  position: relative;
-  display: inline-block;
-  height: var(--uib-size);
-  width: var(--uib-size);
-  animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
-  }
 
-  .three-body__dot {
-  position: absolute;
-  height: 100%;
-  width: 30%;
-  }
-
-  .three-body__dot:after {
-  content: '';
-  position: absolute;
-  height: 0%;
-  width: 100%;
-  padding-bottom: 100%;
-  background-color: var(--uib-color);
-  border-radius: 50%;
-  }
-
-  .three-body__dot:nth-child(1) {
-  bottom: 5%;
-  left: 0;
-  transform: rotate(60deg);
-  transform-origin: 50% 85%;
-  }
-
-  .three-body__dot:nth-child(1)::after {
-  bottom: 0;
-  left: 0;
-  animation: wobble1 var(--uib-speed) infinite ease-in-out;
-  animation-delay: calc(var(--uib-speed) * -0.3);
-  }
-
-  .three-body__dot:nth-child(2) {
-  bottom: 5%;
-  right: 0;
-  transform: rotate(-60deg);
-  transform-origin: 50% 85%;
-  }
-
-  .three-body__dot:nth-child(2)::after {
-  bottom: 0;
-  left: 0;
-  animation: wobble1 var(--uib-speed) infinite
-      calc(var(--uib-speed) * -0.15) ease-in-out;
-  }
-
-  .three-body__dot:nth-child(3) {
-  bottom: -5%;
-  left: 0;
-  transform: translateX(116.666%);
-  }
-
-  .three-body__dot:nth-child(3)::after {
-  top: 0;
-  left: 0;
-  animation: wobble2 var(--uib-speed) infinite ease-in-out;
-  }
-
-  @keyframes spin78236 {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-  }
-
-  @keyframes wobble1 {
-  0%,
-    100% {
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: translateY(-66%) scale(0.65);
-    opacity: 0.8;
-  }
-  }
-
-  @keyframes wobble2 {
-  0%,
-    100% {
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
-
-  50% {
-    transform: translateY(66%) scale(0.65);
-    opacity: 0.8;
-  }
-  }
-
-  .pre_div {
-    position: relative;
-    &:hover {
-      .copy_btn {
-        opacity: 1;
-      }
-    }
-    .copy_btn {
-      cursor: pointer;
-      color: #fff;
-      z-index: 2;
-      background-color: gray;
-      padding: 2px 5px;
-      border-radius: 2px;
-      font-size: 12px;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      opacity: 0;
-      transition: opacity 0.6s;
-    }
-  }
-  .download_btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
-    img {
-      width: 20px;
-      opacity: 0;
-      height: 20px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgb(185, 185, 185);
-      overflow: hidden;
-      display: inline-block;
-      cursor: pointer;
-      transition: opacity 0.6s;
-    }
-  }
-  *:not(.v3md-plugin-container):not(.v3md-plugin-container *) {
-    animation: fade-in 0.6s ease-in-out;
-  }
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  .v3md-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
-  }
-  .v3md-plugin-container {
-    animation: none !important;
-  }
-  a {
-    color: var(--link-color);
-    text-decoration: none;
-  }
-  ul {
-    list-style-type: disc;
-  }
-  .remark-container {
-    margin: 10px 0;
-    padding: 15px 10px;
-    border-radius: 5px;
-    &.warning {
-      background-color: rgb(255 145 0 / 6%);
-      border-left: 5px solid #ff9100;
-    }
-    &.tip {
-      background-color: rgb(0 191 165 / 6%);
-      border-left: 5px solid #00bfa5;
-    }
-    &.error {
-      background-color: rgb(255 82 82 / 6%);
-      border-left: 5px solid #ff5252;
-    }
-  }
-  .katex-display {
-    overflow-x: scroll;
-    overflow-y: hidden;
-  }
-  img {
-    max-width: 100%;
-  }
-  pre {
-    position: relative;
-    border-radius: 4px;
-    overflow-x: auto;
-  }
-  table {
-    margin: 10px 0;
-    width: 100%;
-    display: block;
-    overflow-x: scroll;
-    border-collapse: collapse;
-  }
-  td,
-  th {
-    border: 1px solid #000;
-    padding: 5px 10px;
-    min-width: 40px;
-  }
-  tbody tr:nth-child(odd) {
-    background-color: #eee;
-  }
-  blockquote {
-    display: block;
-    font-weight: 500;
-    font-style: italic;
-    border-left: 5px solid #e2e8f0;
-    quotes: "\201C""\201D""\2018""\2019";
-    padding-left: 1em;
-    margin: 10px;
-  }
-
-  /* ============ Code Block Card 样式 ============ */
-  .v3md-code-block-card {
-    position: relative;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    margin: 12px 0;
-
-    .card-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 40px;
-      padding: 0 12px;
-      background: #fafafa;
-      border-bottom: 1px solid #e2e8f0;
-      user-select: none;
-
-      .card-toolbar-left {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .card-type-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 600;
-      }
-
-      .card-type-icon {
-        display: inline-flex;
-      }
-
-      .card-toolbar-center {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-      }
-
-      .card-tab-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #666;
-        line-height: 1;
-        transition: all 0.15s;
-
-        > span {
-          display: flex;
-          align-items: center;
-          vertical-align: middle;
-        }
-
-        &:hover {
-          background: #e8e8e8;
-        }
-
-        &.active {
-          color: #333;
-          font-weight: 600;
-          background: #e0e0e0;
-        }
-      }
-
-      .card-toolbar-right {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-      }
-    }
-
-    .card-toolbar-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 5px 7px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      border-radius: 4px;
-      color: #666;
-      font-size: 12px;
-      transition: all 0.15s;
-      line-height: 1;
-
-      &:hover {
-        background: #e8e8e8;
-        color: #333;
-      }
-
-      &.active {
-        color: #2563eb;
-        background: #dbeafe;
-      }
-
-      &:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
-    }
-
-    .card-content {
-      min-height: 100px;
-      position: relative;
-      overflow: hidden;
-      cursor: grab;
-      user-select: none;
-
-      &.is-dragging {
-        cursor: grabbing;
-      }
-    }
-
-    .v3md-card-preview-content {
-      position: relative;
-      min-height: 100px;
-      padding: 12px;
-    }
-
-    .v3md-card-source-content {
-      pre {
-        margin: 0;
-        border-radius: 0;
-        border: none;
-        background: #1e1e1e;
-        padding: 16px;
-        margin: 0;
-
-        code {
-          color: #d4d4d4;
-          font-size: 13px;
-          font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-        }
-      }
-    }
-
-    .zoom-controls {
-      position: absolute;
-      right: 12px;
-      bottom: 8px;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(255, 255, 255, 0.92);
-      padding: 3px 6px;
-      border-radius: 4px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-
-      .zoom-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 22px;
-        height: 22px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        border-radius: 3px;
-        color: #666;
-        padding: 0;
-
-        &:hover:not(:disabled) {
-          background: #e8e8e8;
-          color: #333;
-        }
-
-        &:disabled {
-          opacity: 0.35;
-          cursor: not-allowed;
-        }
-      }
-
-      .zoom-percent {
-        font-size: 11px;
-        color: #666;
-        min-width: 38px;
-        text-align: center;
-      }
-    }
-  }
-
-  /* 全屏遮罩 */
-  .v3md-fullscreen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-
-    .v3md-code-block-card {
-      max-width: 90vw;
-      max-height: 90vh;
-      width: 90vw;
-      height: 90vh;
-      display: flex;
-      flex-direction: column;
-
-      .card-content {
-        flex: 1;
-        overflow: auto;
-      }
-    }
-  }
-}
-
-/* 报告文档链接卡片 */
-.v3md-report-link-card {
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  margin: 8px 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-  }
-
-  .v3md-report-link-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: inherit;
-    flex: 1;
-    min-width: 0;
-
-    .v3md-report-link-icon {
-      flex-shrink: 0;
-      display: inline-flex;
-
-      :deep(svg) {
-        display: block;
-      }
-    }
-
-    .v3md-report-link-text {
-      font-size: 14px;
-      color: #1f2937;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .v3md-report-link-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-    margin-left: 12px;
-  }
-
-  .v3md-report-link-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    background: #fff;
-    color: #6b7280;
-    cursor: pointer;
-    transition: all 0.15s;
-
-    &:hover {
-      border-color: #3b82f6;
-      color: #3b82f6;
-      background: #eff6ff;
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
-
-    :deep(svg) {
-      display: block;
-    }
-  }
+<style scoped>
+.v3md-shadow-host {
+  display: block;
 }
 </style>

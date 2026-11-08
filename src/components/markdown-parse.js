@@ -9,11 +9,10 @@ import { ImgTag } from './img-tag.js';
 import { CODE_BLOCK_CARD_TAG, CodeBlockCard } from './code-block-card.js';
 import remarkParse from "remark-parse";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
-import 'highlight.js/styles/github-dark.css';
 import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeRaw from 'rehype-raw';
+import rehypeIsolate from './rehype-isolate.js';
 import rehypeHighlight from 'rehype-highlight'
 import remarkFlexibleContainers from 'remark-flexible-containers'
 import remarkGfm from "remark-gfm";
@@ -55,7 +54,8 @@ export default defineComponent({
                 .use(remarkGfm)
                 .use(rehypeKatex)
                 .use(remarkMath)
-                .use(rehypeHighlight);
+                .use(rehypeHighlight)
+                .use(rehypeIsolate);
 
             return processor;
         });

@@ -1,42 +1,45 @@
 # v3-markdown-stream
 
+English | [简体中文](./README.zh-CN.md)
+
 [![NPM version](https://img.shields.io/npm/v/v3-markdown-stream.svg?style=flat)](https://npmjs.org/package/v3-markdown-stream) [![NPM downloads](http://img.shields.io/npm/dm/v3-markdown-stream.svg?style=flat)](https://npmjs.org/package/v3-markdown-stream)
 
-一个基于 Vue 3 的高性能 Markdown 流式渲染组件，支持增量输出、无闪屏、无卡顿，样式友好。
+A high-performance Markdown streaming rendering component based on Vue 3, supporting incremental output with no flickering and no jank, with friendly styling.
 
-[演示地址](https://xhy12345.github.io/ "演示地址")
+[Live Demo](https://xhy12345.github.io/ "Live Demo")
 
-> **🔧 环境要求：**
-> - `@vitejs/plugin-vue` 版本必须 **≥ 6.0.1** 
-> - `vite` 版本必须 **≥ 7.2.2**
-> 
-> 请确保你的项目依赖满足以上版本要求，否则可能会出现兼容性问题！
+> **🔧 Requirements:**
+> - `@vitejs/plugin-vue` version must be **≥ 6.0.1**
+> - `vite` version must be **≥ 7.2.2**
+>
+> Please ensure your project dependencies meet the above version requirements, otherwise compatibility issues may occur!
 
-## 特性
+## Features
 
-- ✨ **流式输出**：支持增量渲染 Markdown 内容，适用于大文本或流式数据场景
-- 🎯 **无闪屏渲染**：每次更新内容时保持平滑过渡，提升用户体验(不完整图片链接、表格、数学公式缓存处理)
-- 🎨 **样式友好**：内置美观的默认样式，支持自定义主题颜色
-- 🚀 **高性能**：使用 Vue 的 computed 缓存和响应式系统优化渲染性能
-- 📋 **全面的 Markdown 支持**：代码高亮、GFM、原生Html标签、表格支持导出、代码支持可复制
-- 🧩 **插件系统**：支持自定义组件渲染插件，可在 Markdown 中嵌入 ECharts 图表等自定义 Vue 组件
-- 📊 **Mermaid & ECharts**：支持 ` ```mermaid ` 和 ` ```echarts ` 代码块语法渲染图表，自带 Preview/Source 切换、复制、下载、缩放、全屏等功能
-- 📄 **报告文档链接**：自动识别 Markdown 链接中包含 `type=result` 参数的 URL，渲染为带下载按钮的文档卡片
-- ⏳ **碎片 Loading**：流式输出中不完整的图片、数学公式、插件语法、Mermaid/ECharts 代码块自动展示 loading 动画
+- ✨ **Streaming Output**: Supports incremental rendering of Markdown content, suitable for large text or streaming data scenarios
+- 🎯 **Flicker-Free Rendering**: Maintains smooth transitions on every content update, improving user experience (incomplete image links, tables, and math formulas are buffered)
+- 🎨 **Styling Friendly**: Built-in beautiful default styles with customizable theme color
+- 🚀 **High Performance**: Optimized rendering performance using Vue's computed caching and reactivity system
+- 📋 **Comprehensive Markdown Support**: Code highlighting, GFM, native HTML tags, table export, and copyable code blocks
+- 🧩 **Plugin System**: Supports custom component rendering plugins, allowing you to embed custom Vue components such as ECharts charts in Markdown
+- 📊 **Mermaid & ECharts**: Supports ` ```mermaid ` and ` ```echarts ` code block syntax for chart rendering, with built-in Preview/Source toggle, copy, download, zoom, and fullscreen features
+- 📄 **Report Document Links**: Automatically recognizes URLs containing the `type=result` parameter in Markdown links and renders them as document cards with download buttons
+- ⏳ **Fragment Loading**: Incomplete images, math formulas, plugin syntax, and Mermaid/ECharts code blocks during streaming output automatically display a loading animation
+- 🛡️ **Shadow DOM Isolation**: Rendered content runs inside a Shadow DOM, so `<style>` tags in Markdown / HTML are physically isolated and will not pollute the host page's global styles
 
-## 安装
+## Installation
 
 ### NPM / Yarn
 
 ```bash
 npm install v3-markdown-stream
-# 或
+# or
 yarn add v3-markdown-stream
 ```
 
-## 基本用法
+## Basic Usage
 
-### 在 Vue 组件中使用
+### Use in a Vue Component
 
 ```vue
 <template>
@@ -48,29 +51,30 @@ yarn add v3-markdown-stream
 <script setup>
 import { ref } from 'vue'
 import { MarkdownRender } from 'v3-markdown-stream';
-import 'v3-markdown-stream/dist/v3-markdown-stream.css';
 
-// 静态内容
+// Static content
 const markdownContent = ref('# Hello World\n\nThis is a simple markdown example.')
 </script>
 ```
 
-## 参数说明
+> **Styling Note**: Component styles (including KaTeX and code highlighting) are automatically injected into the Shadow Root; no need to import `dist/v3-markdown-stream.css`.
 
-|参数名|必填|类型|默认值|描述|
+## Props
+
+|Prop|Required|Type|Default|Description|
 |-|-|-|-|-|
-|markInfo|是|String|''|Markdown 文本内容，可以一次性传入完整内容，也可以通过流式方式逐步添加内容|
-|themeColor|否|String|'#000000'|主题色（Strong标签字体颜色）|
-|baseFontSize|否|String|'1em'|基础字体大小|
-|pluginRegistry|否|Object|null|插件注册表，通过 `createPluginRegistry` 创建，用于支持自定义组件渲染|
+|markInfo|Yes|String|''|Markdown text content. You can pass the full content at once or append content incrementally for streaming|
+|themeColor|No|String|'#000000'|Theme color (Strong tag font color)|
+|baseFontSize|No|String|'1em'|Base font size|
+|pluginRegistry|No|Object|null|Plugin registry created via `createPluginRegistry`, used to support custom component rendering|
 
-## 事件
+## Events
 
-|事件名|参数|描述|
+|Event|Payload|Description|
 |-|-|-|
-|refClick|numbers: number[]|当 `<ref>` 标签被点击时触发，参数为从 `[3]` 或 `[1,2,3]` 中提取的数字数组|
+|refClick|numbers: number[]|Triggered when a `<ref>` tag is clicked. The payload is an array of numbers extracted from `[3]` or `[1,2,3]`|
 
-### 用法示例
+### Usage Example
 
 ```vue
 <template>
@@ -79,58 +83,58 @@ const markdownContent = ref('# Hello World\n\nThis is a simple markdown example.
 
 <script setup>
 const onRefClick = (numbers) => {
-  console.log('点击了引用:', numbers) // 例如 [3] 或 [1, 2, 3]
+  console.log('Ref clicked:', numbers) // e.g. [3] or [1, 2, 3]
 }
 </script>
 ```
 
-Markdown 中使用：
+Usage in Markdown:
 
 ```markdown
-这是引用文献<ref>[3]</ref>
-这是多个引用<ref>[1,2,3]</ref>
+This is a citation<ref>[3]</ref>
+This is multiple citations<ref>[1,2,3]</ref>
 ```
 
-## 插件系统
+## Plugin System
 
-插件系统允许你在 Markdown 中嵌入自定义 Vue 组件。**ECharts 和 Mermaid 插件已内置**，无需手动引入即可直接使用。
+The plugin system allows you to embed custom Vue components in Markdown. **ECharts and Mermaid plugins are built-in**, no manual import required.
 
-### 基本用法
+### Basic Usage
 
-内置插件支持两种语法：
+The built-in plugins support two syntaxes:
 
-#### 1. 代码块语法（推荐）
+#### 1. Code Block Syntax (Recommended)
 
-使用 ` ```mermaid ` 和 ` ```echarts ` 代码块，自带 Preview/Source 切换、复制、下载、缩放、全屏等功能卡片：
+Use ` ```mermaid ` and ` ```echarts ` code blocks, with built-in Preview/Source toggle, copy, download, zoom, and fullscreen card features:
 
 ````markdown
 ```mermaid
 graph TD
-    A[开始] --> B{判断条件}
-    B -->|是| C[执行操作1]
-    B -->|否| D[执行操作2]
-    C --> E[结束]
+    A[Start] --> B{Condition}
+    B -->|Yes| C[Action 1]
+    B -->|No| D[Action 2]
+    C --> E[End]
     D --> E
 ```
 
 ```echarts
 {
-  "title": { "text": "月度销售额" },
+  "title": { "text": "Monthly Sales" },
   "tooltip": { "trigger": "axis" },
-  "xAxis": { "type": "category", "data": ["一月", "二月", "三月"] },
+  "xAxis": { "type": "category", "data": ["Jan", "Feb", "Mar"] },
   "yAxis": { "type": "value" },
   "series": [{ "type": "bar", "data": [10, 20, 30] }]
 }
 ```
 ````
 
-- **ECharts**：代码块内容为完整的 ECharts `option` 对象（JSON 格式）
-- **Mermaid**：代码块内容为 Mermaid 语法文本
-- 流式输出时，Mermaid 代码块未闭合前显示 loading，闭合后自动渲染；ECharts 在 JSON 合法后渲染，非法时显示 loading
+- **ECharts**: The code block content is a complete ECharts `option` object (JSON format)
+- **Mermaid**: The code block content is Mermaid syntax text
+- During streaming output, Mermaid code blocks show a loading state before closing and render automatically once closed; ECharts renders when the JSON is valid and shows a loading state when invalid
 
-#### 2. 插件语法（兼容）
+#### 2. Plugin Syntax (Compatible)
 
-使用 `[[plugin JSON配置]]` 语法，直接渲染图表（无卡片包装）：
+Use the `[[plugin JSON config]]` syntax to render charts directly (no card wrapper):
 
 ```markdown
 [[echarts {"type":"bar","data":[10,20,30,40,50]}]]
@@ -138,66 +142,66 @@ graph TD
 [[mermaid {"code":"graph TD\\n    A --> B"}]]
 ```
 
-### ECharts 插件
+### ECharts Plugin
 
-ECharts 支持两种使用方式：
+ECharts supports two usage modes:
 
-- **代码块语法**（推荐）：` ```echarts ` 代码块内容为完整的 ECharts `option` 对象（JSON），支持所有 ECharts 配置
-- **插件语法**：`[[echarts JSON配置]]`，支持简单模式和完整模式
+- **Code block syntax** (recommended): The ` ```echarts ` code block content is a complete ECharts `option` object (JSON), supporting all ECharts configurations
+- **Plugin syntax**: `[[echarts JSON config]]`, supports simple mode and full mode
 
-|配置项|类型|默认值|描述|
+|Config|Type|Default|Description|
 |-|-|-|-|
-|type|String|-|图表类型：bar、line、pie 等（简单模式，仅插件语法）|
-|data|Array|-|图表数据（简单模式，仅插件语法）|
-|width|String|'100%'|图表容器宽度（仅插件语法）|
-|height|String|'300px'|图表容器高度（仅插件语法）|
-|series|Array|-|ECharts series 配置（完整模式，与 type 互斥）|
-|其他|Any|-|所有 ECharts option 配置项均可传入|
+|type|String|-|Chart type: bar, line, pie, etc. (simple mode, plugin syntax only)|
+|data|Array|-|Chart data (simple mode, plugin syntax only)|
+|width|String|'100%'|Chart container width (plugin syntax only)|
+|height|String|'300px'|Chart container height (plugin syntax only)|
+|series|Array|-|ECharts series config (full mode, mutually exclusive with type)|
+|others|Any|-|All ECharts option config items can be passed in|
 
-- **简单模式**（插件语法）：传入 `type` + `data`，自动补全坐标轴等配置
-- **完整模式**：直接传入 ECharts 的 `option` 配置，支持所有 ECharts 功能
+- **Simple mode** (plugin syntax): Pass `type` + `data`, axes and other configs are auto-completed
+- **Full mode**: Pass the ECharts `option` config directly, supporting all ECharts features
 
-### Mermaid 插件
+### Mermaid Plugin
 
-Mermaid 支持两种使用方式：
+Mermaid supports two usage modes:
 
-- **代码块语法**（推荐）：` ```mermaid ` 代码块内容为 Mermaid 语法文本，支持流程图、时序图、甘特图等
-- **插件语法**：`[[mermaid {"code":"..."}]]`，通过 `code` 字段传入 Mermaid 代码
+- **Code block syntax** (recommended): The ` ```mermaid ` code block content is Mermaid syntax text, supporting flowcharts, sequence diagrams, Gantt charts, etc.
+- **Plugin syntax**: `[[mermaid {"code":"..."}]]`, pass Mermaid code via the `code` field
 
-流式输出时，Mermaid 代码块未闭合前显示 loading，闭合后自动渲染，避免语法不合法时报错。
+During streaming output, Mermaid code blocks show a loading state before closing and render automatically once closed, avoiding errors from invalid syntax.
 
-### 报告文档链接
+### Report Document Links
 
-当 Markdown 中出现链接 URL 包含 `type=result` 参数时，自动渲染为文档卡片（含文档图标 + 标题 + 下载按钮），无需额外配置：
+When a Markdown link URL contains the `type=result` parameter, it is automatically rendered as a document card (with document icon + title + download button), no extra configuration needed:
 
 ```markdown
-[AI客服平台 — 需求文档](https://example.com/report/requirement.pdf?type=result)
+[AI Customer Service Platform — Requirements Doc](https://example.com/report/requirement.pdf?type=result)
 
-[2026年度技术报告](https://example.com/report/tech-2026.docx?type=result&format=docx)
+[2026 Annual Tech Report](https://example.com/report/tech-2026.docx?type=result&format=docx)
 ```
 
-- 自动识别标准 Markdown 链接 `[文本](url)` 中 URL 是否包含 `type=result` 参数
-- 渲染为圆角卡片，左侧显示文档图标和标题，右侧显示下载按钮
-- 点击下载按钮触发文件下载，点击卡片区域在新窗口打开链接
+- Automatically detects whether the URL in a standard Markdown link `[text](url)` contains the `type=result` parameter
+- Renders as a rounded card with a document icon and title on the left, and a download button on the right
+- Clicking the download button triggers a file download; clicking the card area opens the link in a new window
 
-### 自定义插件
+### Custom Plugins
 
-你可以创建自己的插件，只需定义一个符合接口的对象：
+You can create your own plugins by defining an object that conforms to the interface:
 
 ```js
 import { createPluginPattern } from 'v3-markdown-stream'
 
 const myPlugin = {
-  name: 'mywidget',                          // 插件名（用于 [[mywidget ...]] 语法）
-  tagName: 'v3md-mywidget',                  // 自定义 HTML 标签名
-  pattern: createPluginPattern('mywidget'),  // 匹配正则（或自定义 RegExp）
-  component: MyWidgetVueComponent,           // Vue 组件，接收 config prop
+  name: 'mywidget',                          // Plugin name (for [[mywidget ...]] syntax)
+  tagName: 'v3md-mywidget',                  // Custom HTML tag name
+  pattern: createPluginPattern('mywidget'),  // Matching regex (or custom RegExp)
+  component: MyWidgetVueComponent,           // Vue component, receives config prop
 }
 
 const registry = createPluginRegistry([myPlugin])
 ```
 
-插件组件会通过 `config` prop 接收解析后的 JSON 配置对象：
+The plugin component receives the parsed JSON config object via the `config` prop:
 
 ```vue
 <script setup>
@@ -214,28 +218,28 @@ const props = defineProps({
 
 #### `createPluginRegistry(plugins)`
 
-创建插件注册表。
+Creates a plugin registry.
 
-- **参数**：`plugins: Array<Plugin>` — 插件数组
-- **返回**：插件注册表对象，传入 `MarkdownRender` 的 `pluginRegistry` prop
+- **Parameters**: `plugins: Array<Plugin>` — array of plugins
+- **Returns**: A plugin registry object to pass to the `pluginRegistry` prop of `MarkdownRender`
 
 #### `createPluginPattern(name)`
 
-根据插件名生成匹配 `[[name ...]]` 语法的正则表达式。
+Generates a regex matching the `[[name ...]]` syntax based on the plugin name.
 
-- **参数**：`name: String` — 插件名
-- **返回**：`RegExp` — 全局正则表达式
-
-
-[GitHub源码仓库地址](https://github.com/xhy12345/v3-markdown-stream)
+- **Parameters**: `name: String` — plugin name
+- **Returns**: `RegExp` — a global regular expression
 
 
-如果觉得好用，欢迎给个Star ⭐️ 支持一下！
+[GitHub Repository](https://github.com/xhy12345/v3-markdown-stream)
 
-## 贡献
 
-欢迎提交 Issues 和 Pull Requests 来帮助改进这个组件！
+If you find it useful, please give it a Star ⭐️ to support!
 
-## 许可证
+## Contributing
+
+Issues and Pull Requests are welcome to help improve this component!
+
+## License
 
 MIT
